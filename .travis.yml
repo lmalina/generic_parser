@@ -9,15 +9,17 @@ stages:
   - name: package
     if: tag =~ ^v\d+\.\d+\.\d+.*
 
+python: "3.6"
+
 language: python
 email:
     on_success: always
     on_failure: always
-python:
- - "3.6"
+
 
 jobs:
   include:
+    - &test-stage
     - stage: test
       before_script:
         - curl -L https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64 > ./cc-test-reporter
@@ -27,6 +29,13 @@ jobs:
        - python setup.py test
       after_script:
         - ./cc-test-reporter after-build --exit-code $TRAVIS_TEST_RESULT
+
+    - <<: *test-stage
+      python: 3.7
+
+    - <<: *test-stage
+      python: 3.8
+
 
     - stage: documentation
       install:
